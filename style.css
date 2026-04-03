@@ -1,87 +1,110 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Shift App</title>
-  <link rel="stylesheet" href="style.css"/>
-</head>
-<body>
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f2f2f7;
+}
 
-<!-- LOGIN -->
-<div id="loginScreen" class="login">
-  <h1>📱 Shift App</h1>
-  <button id="loginBtn">Войти через Google</button>
-</div>
+.app {
+  padding: 16px;
+}
 
-<!-- APP -->
-<div id="app" class="app hidden">
+.header {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
 
-  <div class="top">
-    <div id="userEmail"></div>
-    <button id="logoutBtn">Выйти</button>
-  </div>
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
 
-  <div class="header" id="monthTitle"></div>
+.day {
+  aspect-ratio: 1;
+  background: white;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  <div id="calendar" class="calendar"></div>
+.day.work {
+  background: #d1fae5;
+}
 
-  <div class="stats">
-    <table>
-      <tr>
-        <th></th>
-        <th>1–15</th>
-        <th>16–31</th>
-        <th>Итого</th>
-      </tr>
-      <tr>
-        <td>💰</td>
-        <td id="salary1">0</td>
-        <td id="salary2">0</td>
-        <td id="salaryT">0</td>
-      </tr>
-      <tr>
-        <td>🍵</td>
-        <td id="tips1">0</td>
-        <td id="tips2">0</td>
-        <td id="tipsT">0</td>
-      </tr>
-    </table>
-  </div>
+.stats {
+  margin-top: 16px;
+  background: white;
+  padding: 12px;
+  border-radius: 16px;
+}
 
-</div>
+table {
+  width: 100%;
+  text-align: center;
+}
 
-<!-- PANEL -->
-<div id="overlay" class="overlay"></div>
+.live-stats {
+  margin-top: 10px;
+  background: #f2f2f7;
+  border-radius: 14px;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+}
 
-<div id="panel" class="panel">
+.panel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  padding: 16px;
+  border-radius: 20px 20px 0 0;
+  transform: translateY(100%);
+  transition: 0.3s;
+}
 
-  <div id="title"></div>
+.panel.active {
+  transform: translateY(0);
+}
 
-  <div class="toggle">
-    🟢 Рабочий день
-    <input id="work" type="checkbox">
-  </div>
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.2);
+  display: none;
+}
 
-  <input id="rate" placeholder="Ставка">
-  <input id="rev" placeholder="Выручка">
-  <input id="percent" placeholder="% (4.5)">
+.overlay.active {
+  display: block;
+}
 
-  <div class="toggle">
-    🍵 Чаевые
-    <input id="tipsEnabled" type="checkbox">
-  </div>
+.field {
+  margin-bottom: 10px;
+}
 
-  <input id="tips" placeholder="Чаевые">
+input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: #f2f2f7;
+}
 
-  <div class="live">
-    💰 <span id="liveSalary">0</span><br>
-    🍵 <span id="liveTips">0</span>
-  </div>
+button {
+  width: 100%;
+  padding: 12px;
+  background: #007aff;
+  color: white;
+  border: none;
+  border-radius: 12px;
+}
 
-  <button id="saveBtn">Сохранить</button>
-</div>
-
-<script type="module" src="app.js"></script>
-</body>
-</html>
+.toggle {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
