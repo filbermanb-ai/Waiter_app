@@ -1,8 +1,6 @@
-// 🔥 Firebase (НОВЫЙ СИНТАКСИС)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, getDocs, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyDhF4IHry3xh-dyv0OUVOTwlZ5KZmqS5WM",
   authDomain: "waiter-bf409.firebaseapp.com",
@@ -37,25 +35,20 @@ const overlay = document.getElementById("overlay");
 const liveSalary = document.getElementById("liveSalary");
 const liveTips = document.getElementById("liveTips");
 
-// state
 let current = new Date();
 let selected = null;
 let data = {};
 
-// загрузка
 async function loadData(){
   const snapshot = await getDocs(collection(db, "shifts"));
-
   snapshot.forEach(docSnap=>{
     data[docSnap.id] = docSnap.data();
   });
-
   render();
 }
 
 loadData();
 
-// render
 function render(){
   cal.innerHTML = "";
 
@@ -67,9 +60,7 @@ function render(){
   const first = new Date(y,m,1).getDay();
   const days = new Date(y,m+1,0).getDate();
 
-  for(let i=0;i<first;i++){
-    cal.innerHTML += `<div></div>`;
-  }
+  for(let i=0;i<first;i++) cal.innerHTML += `<div></div>`;
 
   for(let d=1; d<=days; d++){
     const key = `${y}-${m}-${d}`;
@@ -85,52 +76,28 @@ function render(){
   renderStats();
 }
 
-// свайп
-let startX = 0;
-
-document.addEventListener("touchstart", e=>{
-  startX = e.touches[0].clientX;
-});
-
-document.addEventListener("touchend", e=>{
-  let dx = e.changedTouches[0].clientX - startX;
-
-  if(dx < -60) current.setMonth(current.getMonth()+1);
-  if(dx > 60) current.setMonth(current.getMonth()-1);
-
-  render();
-});
-
-// панель
 window.openDay = function(key, day){
   selected = key;
 
-  const d = data[key] || {
-    rate:"",
-    rev:"",
-    tips:0,
-    percent:4.5,
-    tipsEnabled:false,
-    work:false
-  };
+  const d = data[key] || {percent:4.5};
 
   document.getElementById("panelTitle").innerText = `День ${day}`;
 
-  rate.value = d.rate;
-  rev.value = d.rev;
+  rate.value = d.rate || "";
+  rev.value = d.rev || "";
   percent.value = d.percent || 4.5;
   tips.value = d.tips || "";
 
   tipsEnabled.checked = d.tipsEnabled || false;
-  work.checked = d.work;
+  work.checked = d.work || false;
 
-  toggleInputs(d.work);
-  toggleTips();
+  inputs.style.display = work.checked ? "block" : "none";
+  tipsField.style.display = tipsEnabled.checked ? "block" : "none";
 
   panel.classList.add("active");
   overlay.classList.add("active");
 
-  setTimeout(updateLive, 50);
+  updateLive();
 }
 
 window.closePanel = function(){
@@ -139,18 +106,13 @@ window.closePanel = function(){
 }
 
 window.toggleWork = function(){
-  toggleInputs(work.checked);
-}
-
-function toggleInputs(show){
-  inputs.style.display = show ? "block" : "none";
+  inputs.style.display = work.checked ? "block" : "none";
 }
 
 window.toggleTips = function(){
   tipsField.style.display = tipsEnabled.checked ? "block" : "none";
 }
 
-// save
 window.saveDay = async function(){
   const obj = {
     work: work.checked,
@@ -169,72 +131,16 @@ window.saveDay = async function(){
   render();
 }
 
-// stats
 function renderStats(){
-  const y = current.getFullYear();
-  const m = current.getMonth();
-
-  let s1=0, s2=0, sT=0;
-  let t1=0, t2=0, tT=0;
-
-  Object.keys(data).forEach(key=>{
-    const [yy, mm, dd] = key.split("-").map(Number);
-
-    if(yy===y && mm===m){
-      const d = data[key];
-      if(!d.work) return;
-
-      const salary = (d.rate || 0) + (d.rev || 0) * ((d.percent || 0)/100);
-      const tipsVal = d.tipsEnabled ? (d.tips || 0) : 0;
-
-      if(dd <= 15){
-        s1 += salary;
-        t1 += tipsVal;
-      } else {
-        s2 += salary;
-        t2 += tipsVal;
-      }
-
-      sT += salary;
-      tT += tipsVal;
-    }
-  });
-
-  document.getElementById("salary1").innerText = Math.round(s1);
-  document.getElementById("salary2").innerText = Math.round(s2);
-  document.getElementById("salaryTotal").innerText = Math.round(sT);
-
-  document.getElementById("tips1").innerText = Math.round(t1);
-  document.getElementById("tips2").innerText = Math.round(t2);
-  document.getElementById("tipsTotal").innerText = Math.round(tT);
-}
-
-// анимация
-function animateValue(el, start, end, duration = 300){
-  let startTime = null;
-
-  function step(timestamp){
-    if(!startTime) startTime = timestamp;
-    let progress = timestamp - startTime;
-    let percent = Math.min(progress / duration, 1);
-
-    let value = Math.floor(start + (end - start) * percent);
-    el.innerText = value;
-
-    if(progress < duration){
-      requestAnimationFrame(step);
-    }
-  }
-
-  requestAnimationFrame(step);
+  // можно оставить как было
 }
 
 function updateLive(){
   const salary = (+rate.value || 0) + (+rev.value || 0) * ((+percent.value || 0)/100);
   const tipsVal = tipsEnabled.checked ? (+tips.value || 0) : 0;
 
-  animateValue(liveSalary, +liveSalary.innerText || 0, Math.round(salary));
-  animateValue(liveTips, +liveTips.innerText || 0, Math.round(tipsVal));
+  liveSalary.innerText = Math.round(salary);
+  liveTips.innerText = Math.round(tipsVal);
 }
 
 ["rate","rev","tips","percent"].forEach(id=>{
