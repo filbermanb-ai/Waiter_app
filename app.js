@@ -4,6 +4,13 @@ if (!localStorage.getItem("booted")) {
   localStorage.setItem("booted", "1");
   location.reload();
 }
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    for (let reg of regs) {
+      reg.unregister();
+    }
+  });
+}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getAuth,
