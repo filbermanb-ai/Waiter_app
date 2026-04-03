@@ -108,6 +108,18 @@ button {
   justify-content: space-between;
   margin-bottom: 10px;
 }
+.profile{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  overflow:hidden;
+  background:#ddd;
+}
+
+.profile img{
+  width:100%;
+  height:100%;
+}
 .hidden {
   display: none !important;
 }
