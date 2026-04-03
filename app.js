@@ -1,13 +1,61 @@
-let current = new Date();
-let selected = null;
+// 🔥 Firebase (НОВЫЙ СИНТАКСИС)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-let data = JSON.parse(localStorage.getItem("data") || "{}");
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDhF4IHry3xh-dyv0OUVOTwlZ5KZmqS5WM",
+  authDomain: "waiter-bf409.firebaseapp.com",
+  projectId: "waiter-bf409",
+  storageBucket: "waiter-bf409.firebasestorage.app",
+  messagingSenderId: "156879781789",
+  appId: "1:156879781789:web:cbc0cf21127516a06d3974",
+  measurementId: "G-JHEXQL2R44"
+};
 
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// DOM
 const cal = document.getElementById("calendar");
 const title = document.getElementById("monthTitle");
 
-render();
+const rate = document.getElementById("rate");
+const rev = document.getElementById("rev");
+const percent = document.getElementById("percent");
+const tips = document.getElementById("tips");
 
+const tipsEnabled = document.getElementById("tipsEnabled");
+const tipsField = document.getElementById("tipsField");
+
+const work = document.getElementById("work");
+const inputs = document.getElementById("inputs");
+
+const panel = document.getElementById("panel");
+const overlay = document.getElementById("overlay");
+
+const liveSalary = document.getElementById("liveSalary");
+const liveTips = document.getElementById("liveTips");
+
+// state
+let current = new Date();
+let selected = null;
+let data = {};
+
+// загрузка
+async function loadData(){
+  const snapshot = await getDocs(collection(db, "shifts"));
+
+  snapshot.forEach(docSnap=>{
+    data[docSnap.id] = docSnap.data();
+  });
+
+  render();
+}
+
+loadData();
+
+// render
 function render(){
   cal.innerHTML = "";
 
@@ -37,7 +85,7 @@ function render(){
   renderStats();
 }
 
-/* swipe */
+// свайп
 let startX = 0;
 
 document.addEventListener("touchstart", e=>{
@@ -47,37 +95,37 @@ document.addEventListener("touchstart", e=>{
 document.addEventListener("touchend", e=>{
   let dx = e.changedTouches[0].clientX - startX;
 
-  if(dx < -60) nextMonth();
-  if(dx > 60) prevMonth();
+  if(dx < -60) current.setMonth(current.getMonth()+1);
+  if(dx > 60) current.setMonth(current.getMonth()-1);
+
+  render();
 });
 
-function nextMonth(){
-  current.setMonth(current.getMonth()+1);
-  render();
-}
-
-function prevMonth(){
-  current.setMonth(current.getMonth()-1);
-  render();
-}
-
-/* panel */
-const panel = document.getElementById("panel");
-const overlay = document.getElementById("overlay");
-
-function openDay(key, day){
+// панель
+window.openDay = function(key, day){
   selected = key;
 
-  const d = data[key] || {rate:"",rev:"",tips:"",work:false};
+  const d = data[key] || {
+    rate:"",
+    rev:"",
+    tips:0,
+    percent:4.5,
+    tipsEnabled:false,
+    work:false
+  };
 
   document.getElementById("panelTitle").innerText = `День ${day}`;
 
-  document.getElementById("rate").value = d.rate;
-  document.getElementById("rev").value = d.rev;
-  document.getElementById("tips").value = d.tips;
-  document.getElementById("work").checked = d.work;
+  rate.value = d.rate;
+  rev.value = d.rev;
+  percent.value = d.percent || 4.5;
+  tips.value = d.tips || "";
+
+  tipsEnabled.checked = d.tipsEnabled || false;
+  work.checked = d.work;
 
   toggleInputs(d.work);
+  toggleTips();
 
   panel.classList.add("active");
   overlay.classList.add("active");
@@ -85,36 +133,43 @@ function openDay(key, day){
   setTimeout(updateLive, 50);
 }
 
-function closePanel(){
+window.closePanel = function(){
   panel.classList.remove("active");
   overlay.classList.remove("active");
 }
 
-function toggleWork(){
-  toggleInputs(document.getElementById("work").checked);
+window.toggleWork = function(){
+  toggleInputs(work.checked);
 }
 
 function toggleInputs(show){
-  document.getElementById("inputs").style.display = show ? "block" : "none";
+  inputs.style.display = show ? "block" : "none";
 }
 
-function saveDay(){
-  const work = document.getElementById("work").checked;
+window.toggleTips = function(){
+  tipsField.style.display = tipsEnabled.checked ? "block" : "none";
+}
 
-  data[selected] = {
-    work,
-    rate: work ? +document.getElementById("rate").value || 0 : 0,
-    rev: work ? +document.getElementById("rev").value || 0 : 0,
-    tips: work ? +document.getElementById("tips").value || 0 : 0
+// save
+window.saveDay = async function(){
+  const obj = {
+    work: work.checked,
+    rate: +rate.value || 0,
+    percent: +percent.value || 0,
+    rev: +rev.value || 0,
+    tipsEnabled: tipsEnabled.checked,
+    tips: tipsEnabled.checked ? (+tips.value || 0) : 0
   };
 
-  localStorage.setItem("data", JSON.stringify(data));
+  data[selected] = obj;
+
+  await setDoc(doc(db, "shifts", selected), obj);
 
   closePanel();
   render();
 }
 
-/* 📊 stats */
+// stats
 function renderStats(){
   const y = current.getFullYear();
   const m = current.getMonth();
@@ -129,19 +184,19 @@ function renderStats(){
       const d = data[key];
       if(!d.work) return;
 
-      const salary = (d.rate || 0) + (d.rev || 0)*0.045;
-      const tips = d.tips || 0;
+      const salary = (d.rate || 0) + (d.rev || 0) * ((d.percent || 0)/100);
+      const tipsVal = d.tipsEnabled ? (d.tips || 0) : 0;
 
       if(dd <= 15){
         s1 += salary;
-        t1 += tips;
+        t1 += tipsVal;
       } else {
         s2 += salary;
-        t2 += tips;
+        t2 += tipsVal;
       }
 
       sT += salary;
-      tT += tips;
+      tT += tipsVal;
     }
   });
 
@@ -154,7 +209,7 @@ function renderStats(){
   document.getElementById("tipsTotal").innerText = Math.round(tT);
 }
 
-/* 💰 live calc */
+// анимация
 function animateValue(el, start, end, duration = 300){
   let startTime = null;
 
@@ -175,22 +230,13 @@ function animateValue(el, start, end, duration = 300){
 }
 
 function updateLive(){
-  const rate = +document.getElementById("rate").value || 0;
-  const rev = +document.getElementById("rev").value || 0;
-  const tips = +document.getElementById("tips").value || 0;
+  const salary = (+rate.value || 0) + (+rev.value || 0) * ((+percent.value || 0)/100);
+  const tipsVal = tipsEnabled.checked ? (+tips.value || 0) : 0;
 
-  const salary = rate + rev * 0.045;
-
-  const salaryEl = document.getElementById("liveSalary");
-  const tipsEl = document.getElementById("liveTips");
-
-  const currentSalary = +salaryEl.innerText || 0;
-  const currentTips = +tipsEl.innerText || 0;
-
-  animateValue(salaryEl, currentSalary, Math.round(salary));
-  animateValue(tipsEl, currentTips, Math.round(tips));
+  animateValue(liveSalary, +liveSalary.innerText || 0, Math.round(salary));
+  animateValue(liveTips, +liveTips.innerText || 0, Math.round(tipsVal));
 }
 
-["rate","rev","tips"].forEach(id=>{
+["rate","rev","tips","percent"].forEach(id=>{
   document.getElementById(id).addEventListener("input", updateLive);
 });

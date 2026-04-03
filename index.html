@@ -71,12 +71,25 @@
     </div>
 
     <div class="field">
+      <label>📊 Процент (%)</label>
+      <input id="percent" type="number" placeholder="4.5">
+    </div>
+
+    <div class="field">
       <label>📈 Выручка</label>
       <input id="rev" type="number">
     </div>
 
-    <div class="field">
-      <label>🍵 Чаевые</label>
+    <div class="toggle">
+      <span>🍵 Чаевые</span>
+      <label class="switch">
+        <input id="tipsEnabled" type="checkbox" onchange="toggleTips()">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div id="tipsField" class="field">
+      <label>🍵 Сумма чаевых</label>
       <input id="tips" type="number">
     </div>
 
@@ -91,7 +104,11 @@
 
 </div>
 
-<script src="app.js"></script>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
+
+<script type="module" src="app.js"></script>
 
 <script>
 if ('serviceWorker' in navigator) {
