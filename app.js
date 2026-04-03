@@ -43,13 +43,8 @@ let date=new Date();
 const login=document.getElementById("login");
 const appDiv=document.getElementById("app");
 
-document.getElementById("loginBtn").onclick = async () => {
-  try {
-    await signInWithPopup(auth, provider);
-  } catch (e) {
-    console.log("Popup failed → redirect", e);
-    await signInWithRedirect(auth, provider);
-  }
+document.getElementById("loginBtn").onclick = () => {
+  alert("BUTTON WORKS");
 };
 document.getElementById("logoutBtn").onclick=()=>signOut(auth);
 
