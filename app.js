@@ -64,6 +64,7 @@ onAuthStateChanged(auth, async u => {
   if (!u) {
     login.classList.remove("hidden");
     appDiv.classList.add("hidden");
+    document.getElementById("boot").style.display = "none";
     return;
   }
 
