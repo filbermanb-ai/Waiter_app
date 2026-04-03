@@ -1,125 +1,57 @@
 body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #f2f2f7;
-}
-
-.app {
-  padding: 16px;
-}
-
-.header {
-  text-align: center;
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 14px;
-}
-
-.calendar {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
-}
-
-.day {
-  aspect-ratio: 1;
-  background: white;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.day.work {
-  background: #d1fae5;
-}
-
-.stats {
-  margin-top: 16px;
-  background: white;
-  padding: 12px;
-  border-radius: 16px;
-}
-
-table {
-  width: 100%;
-  text-align: center;
-}
-
-.live-stats {
-  margin-top: 10px;
-  background: #f2f2f7;
-  border-radius: 14px;
-  padding: 10px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.panel {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: white;
-  padding: 16px;
-  border-radius: 20px 20px 0 0;
-  transform: translateY(100%);
-  transition: 0.3s;
-}
-
-.panel.active {
-  transform: translateY(0);
-}
-
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.2);
-  display: none;
-}
-
-.overlay.active {
-  display: block;
-}
-
-.field {
-  margin-bottom: 10px;
-}
-
-input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  background: #f2f2f7;
+  padding: 0;
+  background: #f9f9f9;
 }
 
 button {
-  width: 100%;
-  padding: 12px;
-  background: #007aff;
+  padding: 10px 20px;
+  font-size: 16px;
+  background: #4a90e2;
   color: white;
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
-.toggle {
-  display: flex;
-  justify-content: space-between;
+button:hover {
+  background: #357ab7;
+}
+
+#app div {
   margin-bottom: 10px;
 }
-.profile{
-  width:36px;
-  height:36px;
-  border-radius:50%;
-  overflow:hidden;
-  background:#ddd;
+
+.day {
+  padding: 12px;
+  border: 1px solid #ddd;
+  margin: 5px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
-.profile img{
-  width:100%;
-  height:100%;
+.day.work {
+  background: #d4f7d4;
 }
-.hidden {
-  display: none !important;
+
+.day:hover {
+  background: #eee;
+}
+
+.profile {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #4a90e2;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
 }
