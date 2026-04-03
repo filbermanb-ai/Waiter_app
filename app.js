@@ -146,3 +146,21 @@ function updateLive(){
 ["rate","rev","tips","percent"].forEach(id=>{
   document.getElementById(id).addEventListener("input", updateLive);
 });
+onAuthStateChanged(auth, async (u) => {
+  console.log("auth:", u);
+
+  if (!u) {
+    loginScreen.style.display = "flex";
+    appDiv.style.display = "none";
+    return;
+  }
+
+  user = u;
+
+  loginScreen.style.display = "none";
+  appDiv.style.display = "block";
+
+  document.getElementById("userEmail").innerText = u.email;
+
+  await load();
+});
