@@ -1,3 +1,13 @@
+const rate = document.getElementById("rate");
+const rev = document.getElementById("rev");
+const percent = document.getElementById("percent");
+const tips = document.getElementById("tips");
+
+const work = document.getElementById("work");
+const tipsEnabled = document.getElementById("tipsEnabled");
+
+const panel = document.getElementById("panel");
+const overlay = document.getElementById("overlay");
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, getDocs, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
