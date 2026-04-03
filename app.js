@@ -54,11 +54,28 @@ getRedirectResult(auth).catch(()=>{});
 // AUTH STATE
 onAuthStateChanged(auth, async u => {
 
-  if(!u){
+  // ⛔ пока Firebase НЕ проверил сессию — НИЧЕГО НЕ ДЕЛАЕМ
+  if (!authReady) {
+    authReady = true;
+  }
+
+  if (!u) {
     login.classList.remove("hidden");
     appDiv.classList.add("hidden");
     return;
   }
+
+  user = u;
+
+  login.classList.add("hidden");
+  appDiv.classList.remove("hidden");
+
+  document.getElementById("userEmail").innerText = u.email;
+
+  showProfile(u);
+
+  await load();
+});
 
   user=u;
 
