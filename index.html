@@ -4,10 +4,6 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
-  <meta http-equiv="Pragma" content="no-cache"/>
-  <meta http-equiv="Expires" content="0"/>
-
   <title>Shift Pro</title>
 
   <style>
@@ -17,12 +13,17 @@
       background:#f2f2f7;
     }
 
+    /* 🔥 FIX КНОПКИ (самое важное) */
     button{
+      pointer-events:auto;
+      position:relative;
+      z-index:9999;
       padding:12px 16px;
       border:none;
       border-radius:12px;
       background:#007aff;
       color:white;
+      font-size:16px;
     }
 
     .login{
@@ -87,7 +88,7 @@
       border-radius:20px 20px 0 0;
       transform:translateY(100%);
       transition:.3s;
-      z-index:100;
+      z-index:1000;
     }
 
     .panel.active{transform:translateY(0)}
@@ -97,7 +98,7 @@
       inset:0;
       background:rgba(0,0,0,.3);
       display:none;
-      z-index:90;
+      z-index:900;
     }
 
     .overlay.active{display:block}
@@ -118,16 +119,10 @@
       border-radius:12px;
     }
 
-    .toggle{
-      display:flex;
-      justify-content:space-between;
-      margin:8px 0;
-    }
-
-    .live{
-      background:#f2f2f7;
-      padding:10px;
-      border-radius:10px;
+    /* 🔥 критический FIX чтобы login НЕ блокировал клики */
+    #login{
+      position:relative;
+      z-index:1;
     }
   </style>
 </head>
@@ -177,7 +172,7 @@
   <input id="rev" placeholder="Выручка">
   <input id="percent" placeholder="% (4.5)">
 
-  <div class="toggle">
+  <div>
     🟢 Рабочий день
     <input id="work" type="checkbox">
   </div>
@@ -185,10 +180,7 @@
   <button id="save">Сохранить</button>
 </div>
 
-<script type="module" src="app.js?v=999"></script>
+<script type="module" src="app.js?v=1000"></script>
 
 </body>
 </html>
-<div id="boot" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;">
-  Loading...
-</div>
