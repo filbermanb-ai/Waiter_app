@@ -1,4 +1,9 @@
+const FORCE_REFRESH = Date.now();
 
+if (!localStorage.getItem("booted")) {
+  localStorage.setItem("booted", "1");
+  location.reload();
+}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getAuth,
