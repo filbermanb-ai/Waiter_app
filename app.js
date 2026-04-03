@@ -87,7 +87,10 @@ function renderLogin() {
 
   document.getElementById("loginBtn").onclick = async () => {
     try {
-      await signInWithPopup(auth, provider);
+      import {
+  signInWithRedirect,
+  getRedirectResult
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
       user = auth.currentUser;
       await loadData();
       render();
