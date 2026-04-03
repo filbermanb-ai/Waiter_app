@@ -183,7 +183,15 @@
   <button id="save">Сохранить</button>
 </div>
 
-<script type="module" src="app.js?v=1000"></script>
+<script>
+  const v = localStorage.getItem("app_version");
+  const current = "1.0.0";
+
+  if (v !== current) {
+    localStorage.setItem("app_version", current);
+    location.reload(true);
+  }
+</script>
 
 </body>
 </html>
