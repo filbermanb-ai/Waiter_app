@@ -150,6 +150,17 @@ function close(){
   panel.classList.remove("active");
   overlay.classList.remove("active");
 }
+function showProfile(u){
+  const div=document.getElementById("profile");
+
+  const photo=u.photoURL;
+
+  if(photo){
+    div.innerHTML=`<img src="${photo}">`;
+  }else{
+    div.innerHTML=`👤`;
+  }
+}
 
 overlay.onclick=close;
 
