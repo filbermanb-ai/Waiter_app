@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+  <meta http-equiv="Pragma" content="no-cache"/>
+  <meta http-equiv="Expires" content="0"/>
+
   <title>Shift Pro</title>
 
   <style>
@@ -12,61 +17,65 @@
       background:#f2f2f7;
     }
 
-    .hidden{display:none!important}
-    <div id="loading" style="height:100vh;display:flex;align-items:center;justify-content:center;">
-  Loading...
-</div>
-
-    .login{
-      height:100vh;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      flex-direction:column;
-      gap:12px;
-    }
-
     button{
       padding:12px 16px;
       border:none;
       border-radius:12px;
       background:#007aff;
       color:white;
-      font-size:16px;
     }
+
+    .login{
+      height:100vh;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      gap:12px;
+      position:relative;
+      z-index:10;
+    }
+
+    .hidden{display:none!important}
 
     .app{padding:12px}
 
     .top{
       display:flex;
       justify-content:space-between;
-      margin-bottom:10px;
-      <div id="profile" class="profile"></div>
+      align-items:center;
+    }
+
+    .profile{
+      width:36px;
+      height:36px;
+      border-radius:50%;
+      overflow:hidden;
+      background:#ddd;
+    }
+
+    .profile img{
+      width:100%;
+      height:100%;
     }
 
     .calendar{
       display:grid;
       grid-template-columns:repeat(7,1fr);
       gap:6px;
+      margin-top:10px;
     }
 
     .day{
       background:white;
+      height:40px;
       border-radius:10px;
-      height:38px;
       display:flex;
       justify-content:center;
       align-items:center;
     }
 
     .day.work{background:#d1fae5}
-
-    .stats{
-      margin-top:10px;
-      background:white;
-      padding:10px;
-      border-radius:12px;
-    }
 
     .panel{
       position:fixed;
@@ -78,6 +87,7 @@
       border-radius:20px 20px 0 0;
       transform:translateY(100%);
       transition:.3s;
+      z-index:100;
     }
 
     .panel.active{transform:translateY(0)}
@@ -87,6 +97,7 @@
       inset:0;
       background:rgba(0,0,0,.3);
       display:none;
+      z-index:90;
     }
 
     .overlay.active{display:block}
@@ -98,6 +109,13 @@
       border:none;
       border-radius:10px;
       background:#f2f2f7;
+    }
+
+    .stats{
+      margin-top:10px;
+      background:white;
+      padding:10px;
+      border-radius:12px;
     }
 
     .toggle{
@@ -127,10 +145,8 @@
 
   <div class="top">
     <div id="userEmail"></div>
-    <button id="logoutBtn">Выйти</button>
+    <div id="profile" class="profile"></div>
   </div>
-
-  <div id="monthTitle"></div>
 
   <div id="calendar" class="calendar"></div>
 
@@ -148,12 +164,6 @@
         <td id="s2">0</td>
         <td id="st">0</td>
       </tr>
-      <tr>
-        <td>🍵</td>
-        <td id="t1">0</td>
-        <td id="t2">0</td>
-        <td id="tt">0</td>
-      </tr>
     </table>
   </div>
 
@@ -163,34 +173,19 @@
 <div id="overlay" class="overlay"></div>
 
 <div id="panel" class="panel">
-
-  <div id="title"></div>
+  <input id="rate" placeholder="Ставка">
+  <input id="rev" placeholder="Выручка">
+  <input id="percent" placeholder="% (4.5)">
 
   <div class="toggle">
     🟢 Рабочий день
     <input id="work" type="checkbox">
   </div>
 
-  <input id="rate" placeholder="Ставка">
-  <input id="rev" placeholder="Выручка">
-  <input id="percent" placeholder="% (4.5)">
-
-  <div class="toggle">
-    🍵 Чаевые
-    <input id="tipsEnabled" type="checkbox">
-  </div>
-
-  <input id="tips" placeholder="Чаевые">
-
-  <div class="live">
-    💰 <span id="liveSalary">0</span><br/>
-    🍵 <span id="liveTips">0</span>
-  </div>
-
   <button id="save">Сохранить</button>
 </div>
 
-<script type="module" src="app.js"></script>
+<script type="module" src="app.js?v=999"></script>
 
 </body>
 </html>
