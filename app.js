@@ -1,3 +1,4 @@
+console.log("JS LOADED");
 const rate = document.getElementById("rate");
 const rev = document.getElementById("rev");
 const percent = document.getElementById("percent");
