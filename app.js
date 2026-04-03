@@ -1,6 +1,12 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getAuth,
+  getRedirectResult(auth).then(result => {
+  if (result?.user) {
+    user = result.user;
+    console.log("Redirect login success");
+  }
+});
   GoogleAuthProvider,
   signInWithPopup,
   signOut,
