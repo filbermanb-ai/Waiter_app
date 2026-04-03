@@ -42,12 +42,32 @@ document.getElementById("loginBtn").onclick=()=>signInWithPopup(auth,provider);
 document.getElementById("logoutBtn").onclick=()=>signOut(auth);
 
 // AUTH
-onAuthStateChanged(auth,async u=>{
-  if(!u){
+onAuthStateChanged(auth, async u => {
+
+  // ⛔ пока Firebase проверяет сессию
+  document.getElementById("loading").style.display = "flex";
+  login.classList.add("hidden");
+  appDiv.classList.add("hidden");
+
+  if (!u) {
+    document.getElementById("loading").style.display = "none";
     login.classList.remove("hidden");
-    appDiv.classList.add("hidden");
     return;
   }
+
+  user = u;
+
+  document.getElementById("loading").style.display = "none";
+  login.classList.add("hidden");
+  appDiv.classList.remove("hidden");
+
+  document.getElementById("userEmail").innerText = u.email;
+
+  // 👉 АВАТАР В УГЛУ
+  showProfile(u);
+
+  await load();
+});
 
   user=u;
   login.classList.add("hidden");
