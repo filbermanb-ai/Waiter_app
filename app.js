@@ -85,12 +85,13 @@ function renderLogin() {
     <button id="loginBtn">Войти через Google</button>
   </div>`;
 
-  document.getElementById("loginBtn").onclick = async () => {
-    try {
-      import {
-  signInWithRedirect,
-  getRedirectResult
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+ document.getElementById("loginBtn").onclick = async () => {
+  try {
+    await signInWithRedirect(auth, provider);
+  } catch (e) {
+    console.log("Login error:", e);
+  }
+}; from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
       user = auth.currentUser;
       await loadData();
       render();
