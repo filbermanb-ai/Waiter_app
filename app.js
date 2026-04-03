@@ -1,3 +1,5 @@
+document.getElementById("login").style.display = "none";
+document.getElementById("app").style.display = "none";
 let authReady = false;
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
