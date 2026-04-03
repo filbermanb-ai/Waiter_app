@@ -1,216 +1,110 @@
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
-  signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 import {
   getFirestore,
-  doc,
-  setDoc,
-  getDocs,
-  collection
+  collection,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+// Firebase config
 const firebaseConfig = {
-  apiKey: "AIzaSyDhF4IHry3xh-dyv0OUVOTwlZ5KZmqS5WM",
+  apiKey: "AIzaSyDhF4IHry3xh-dyv0OUVOTwlZ5KKmqS5WM",
   authDomain: "waiter-bf409.firebaseapp.com",
   projectId: "waiter-bf409",
   storageBucket: "waiter-bf409.firebasestorage.app",
   messagingSenderId: "156879781789",
-  appId: "1:156879781789:web:cbc0cf21127516a06d3974"
+  appId: "1:156879781789:web:cbc0cf21127516a06d3974",
+  measurementId: "G-JHEXQL2R44"
 };
 
+// init
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
+await setPersistence(auth, browserLocalPersistence);
 
-let user = null;
+// state
 let data = {};
-let selected = null;
-let date = new Date();
+let current = new Date();
+let user = null;
+const root = document.getElementById("app");
 
-/* 🔥 FIX 1: кнопка всегда кликается */
-document.getElementById("loginBtn").addEventListener("click", async () => {
-  try {
-    await signInWithPopup(auth, provider);
-  } catch (e) {
-    console.log("login error", e);
-  }
-});
+// -------------------- LOAD DATA --------------------
+async function loadData() {
+  const snapshot = await getDocs(collection(db, "shifts"));
+  snapshot.forEach(docSnap => {
+    data[docSnap.id] = docSnap.data();
+  });
+}
 
-/* 🔥 FIX 2: защита от "ложного logout" */
-let authReady = false;
-
-onAuthStateChanged(auth, async u => {
-
-  if (!authReady) {
-    authReady = true;
-  }
-
-  if (!u) {
-    document.getElementById("login").classList.remove("hidden");
-    document.getElementById("app").classList.add("hidden");
+// -------------------- RENDER --------------------
+function render() {
+  if (!user) {
+    renderLogin();
     return;
   }
 
-  user = u;
+  const letter = user.email?.charAt(0).toUpperCase() || "U";
 
-  document.getElementById("login").classList.add("hidden");
-  document.getElementById("app").classList.remove("hidden");
+  const y = current.getFullYear();
+  const m = current.getMonth();
+  const days = new Date(y, m + 1, 0).getDate();
 
-  document.getElementById("userEmail").innerText = u.email;
+  let html = `<div>
+    <div class="profile">${letter}</div>
+    <h2>Календарь</h2>
+    <p>${current.toLocaleString('ru',{month:'long',year:'numeric'})}</p>
+  `;
 
-  showProfile(u);
-
-  await load();
-});
-
-/* PROFILE */
-function showProfile(u){
-  const div=document.getElementById("profile");
-
-  if(u.photoURL){
-    div.innerHTML=`<img src="${u.photoURL}">`;
-  }else{
-    div.innerHTML="👤";
-  }
-}
-
-/* LOAD */
-async function load(){
-  const snap = await getDocs(collection(db,`users/${user.uid}/shifts`));
-
-  data = {};
-
-  snap.forEach(d => {
-    data[d.id] = d.data();
-  });
-
-  render();
-}
-
-/* SAVE */
-document.getElementById("save").onclick = async () => {
-
-  const obj = {
-    rate: +rate.value || 0,
-    rev: +rev.value || 0,
-    percent: +percent.value || 4.5,
-    work: work.checked
-  };
-
-  data[selected] = obj;
-
-  await setDoc(doc(db,`users/${user.uid}/shifts`,selected), obj);
-
-  close();
-  render();
-};
-
-/* RENDER */
-function render(){
-  const cal = document.getElementById("calendar");
-  cal.innerHTML = "";
-
-  const y = date.getFullYear();
-  const m = date.getMonth();
-  const days = new Date(y,m+1,0).getDate();
-
-  for(let d=1; d<=days; d++){
-
+  for (let d = 1; d <= days; d++) {
     const key = `${y}-${m}-${d}`;
+    const isWork = data[key]?.work;
 
-    const div = document.createElement("div");
-    div.className = "day" + (data[key]?.work ? " work" : "");
-    div.innerText = d;
-
-    div.onclick = () => open(key);
-
-    cal.appendChild(div);
+    html += `<div class="day ${isWork?'work':''}" onclick="openDay('${key}',${d})">
+      День ${d}
+    </div>`;
   }
 
-  calc();
+  html += `</div>`;
+  root.innerHTML = html;
 }
 
-/* OPEN */
-function open(key){
-  selected = key;
+// -------------------- LOGIN --------------------
+function renderLogin() {
+  root.innerHTML = `<div style="padding:20px">
+    <h2>Вход</h2>
+    <button id="loginBtn">Войти через Google</button>
+  </div>`;
 
-  panel.classList.add("active");
-  overlay.classList.add("active");
-
-  const v = data[key] || {};
-
-  rate.value = v.rate || "";
-  rev.value = v.rev || "";
-  percent.value = v.percent || 4.5;
-  work.checked = v.work || false;
-}
-
-function close(){
-  panel.classList.remove("active");
-  overlay.classList.remove("active");
-}
-
-overlay.onclick = close;
-
-/* CALC */
-function calc(){
-  let s1=0, s2=0;
-
-  const y=date.getFullYear();
-  const m=date.getMonth();
-
-  for(let k in data){
-
-    const [yy,mm,dd] = k.split("-").map(Number);
-
-    if(yy===y && mm===m && data[k].work){
-
-      const d=data[k];
-      const salary = (d.rate||0) + (d.rev||0)*(d.percent/100);
-
-      if(dd<=15) s1 += salary;
-      else s2 += salary;
+  document.getElementById("loginBtn").onclick = async () => {
+    try {
+      await signInWithPopup(auth, provider);
+      user = auth.currentUser;
+      await loadData();
+      render();
+    } catch (e) {
+      console.log("Login error:", e);
     }
-  }
-
-  s1El.textContent = Math.round(s1);
-  s2El.textContent = Math.round(s2);
-  stEl.textContent = Math.round(s1+s2);
+  };
 }
 
-/* ELEMENTS */
-const rate=document.getElementById("rate");
-const rev=document.getElementById("rev");
-const percent=document.getElementById("percent");
-const work=document.getElementById("work");
-
-const panel=document.getElementById("panel");
-const overlay=document.getElementById("overlay");
-
-const s1El=document.getElementById("s1");
-const s2El=document.getElementById("s2");
-const stEl=document.getElementById("st");
-
-/* SWIPE MONTH */
-let startX=0;
-
-document.addEventListener("touchstart",e=>{
-  startX=e.touches[0].clientX;
-});
-
-document.addEventListener("touchend",e=>{
-  let dx=e.changedTouches[0].clientX - startX;
-
-  if(dx>50) date.setMonth(date.getMonth()-1);
-  if(dx<-50) date.setMonth(date.getMonth()+1);
-
+// -------------------- AUTH STATE --------------------
+onAuthStateChanged(auth, async u => {
+  user = u;
+  if(user) await loadData();
   render();
 });
+
+// -------------------- OPEN DAY --------------------
+window.openDay = function(key, day) {
+  alert(`День ${day} открыт`);
+};
